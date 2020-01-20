@@ -223,7 +223,7 @@ public class PriorityThreadPoolExecutorTest {
         executor.submit(c3);
 
         r11 = executor.execute(_r11, 11);// 如果不是为了改变优先级，返回值可以不接收
-        r12 = executor.submit(_r12, 11);
+        r12 = executor.submit(_r12, 12);
 
         executor.execute(r14);
         executor.submit(c15);

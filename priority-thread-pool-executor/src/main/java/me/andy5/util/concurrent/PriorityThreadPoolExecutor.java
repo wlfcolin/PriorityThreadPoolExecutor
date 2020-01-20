@@ -381,7 +381,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         int priority();
 
         /**
-         * 改变，越大越靠前
+         * 改变优先级，越大越靠前
          *
          * @return
          */
