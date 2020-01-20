@@ -1,36 +1,27 @@
 # PriorityThreadPoolExecutor
 
-#### Description
-具备指定和调整优先级的线程池PriorityThreadPoolExecutor
+#### 介绍
+具备指定和动态调整任务优先级线程池PriorityThreadPoolExecutor
 
-#### Software Architecture
-Software architecture description
+以下几个ThreadPoolExecutor的方法和新扩展的方法均支持指定优先级和动态调整优先级：
+```
+// ThreadPoolExecutor的方法
+void execute(Runnable command) // 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+Future<?> submit(Runnable task) // 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+Future<T> submit(Runnable task, T result) // 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+Future<T> submit(Callable<T> task) // 传递子类PriorityCallable，如果无法传递PriorityCallable可用下面的扩展方法
+// 新扩展的方法
+PriorityRunnable execute(Runnable command, int priority)
+PriorityFutureTask<?> submit(Runnable task, int priority)
+PriorityFutureTask<T> submit(Runnable task, T result, int priority)
+PriorityFutureTask<T> submit(Callable<T> task, int priority)
+```
 
-#### Installation
+已经添加到线程池后动态更改优先级操作方法：
+```
+PriorityRunnable.priority(int priority)
+PriorityCallable.priority(int priority)
+PriorityFutureTask.priority(int priority)
+```
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Instructions
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
-
-
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+详细使用见：[PriorityThreadPoolExecutorTest.java](https://gitee.com/wlfcolin/PriorityThreadPoolExecutor/blob/master/priority-thread-pool-executor/src/test/java/me/andy5/util/concurrent/test/PriorityThreadPoolExecutorTest.java)
