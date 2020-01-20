@@ -6,10 +6,10 @@
 以下几个ThreadPoolExecutor的方法和新扩展的方法均支持指定优先级和动态调整优先级：
 ```
 // ThreadPoolExecutor的方法
-void execute(Runnable command) // 传递子类PriorityRunnable
-Future<?> submit(Runnable task) // 传递子类PriorityRunnable
-Future<T> submit(Runnable task, T result) // 传递子类PriorityRunnable
-Future<T> submit(Callable<T> task) // 传递子类PriorityCallable
+void execute(Runnable command) // 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+Future<?> submit(Runnable task) // 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+Future<T> submit(Runnable task, T result) // 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+Future<T> submit(Callable<T> task) // 传递子类PriorityCallable，如果无法传递PriorityCallable可用下面的扩展方法
 // 新扩展的方法
 PriorityRunnable execute(Runnable command, int priority)
 PriorityFutureTask<?> submit(Runnable task, int priority)
