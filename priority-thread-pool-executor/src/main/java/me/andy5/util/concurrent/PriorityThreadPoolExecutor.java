@@ -50,12 +50,11 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
      * @return
      */
     public PriorityRunnable execute(Runnable command, int priority) {
-        PriorityRunnable runnable;
         if (command instanceof PriorityRunnable) {
-            runnable = (PriorityRunnable) command;
-        } else {
-            runnable = new RunnableAdapter(command, priority);
+            this.execute(command);
+            return (PriorityRunnable) command;
         }
+        PriorityRunnable runnable = new PriorityRunnableAdapter(new DefaultPriority(priority), command);
         this.execute(runnable);
         return runnable;
     }
@@ -67,14 +66,11 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
      * @param priority
      * @return
      */
-    public PriorityFutureTask<?> submit(Runnable task, int priority) {
-        PriorityRunnable runnable;
-        if (task instanceof PriorityRunnable) {
-            runnable = (PriorityRunnable) task;
-        } else {
-            runnable = new RunnableAdapter(task, priority);
+    public PriorityFuture<?> submit(Runnable task, int priority) {
+        if (task instanceof Priority) {
+            return (PriorityFuture<?>) this.submit(task);
         }
-        return (PriorityFutureTask<?>) this.submit(runnable);
+        return (PriorityFuture<?>) this.submit(new PriorityRunnableAdapter(new DefaultPriority(priority), task));
     }
 
     /**
@@ -86,14 +82,12 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
      * @param <T>
      * @return
      */
-    public <T> PriorityFutureTask<T> submit(Runnable task, T result, int priority) {
-        PriorityRunnable runnable;
-        if (task instanceof PriorityRunnable) {
-            runnable = (PriorityRunnable) task;
-        } else {
-            runnable = new RunnableAdapter(task, priority);
+    public <T> PriorityFuture<T> submit(Runnable task, T result, int priority) {
+        if (task instanceof Priority) {
+            return (PriorityFuture<T>) this.submit(task, result);
         }
-        return (PriorityFutureTask<T>) this.submit(runnable, result);
+        return (PriorityFuture<T>) this.submit(new PriorityRunnableAdapter(new DefaultPriority(priority), task),
+                result);
     }
 
     /**
@@ -104,24 +98,21 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
      * @param <T>
      * @return
      */
-    public <T> PriorityFutureTask<T> submit(Callable<T> task, int priority) {
-        PriorityCallable callable;
-        if (task instanceof PriorityCallable) {
-            callable = (PriorityCallable) task;
-        } else {
-            callable = new CallableAdapter<>(task, priority);
+    public <T> PriorityFuture<T> submit(Callable<T> task, int priority) {
+        if (task instanceof Priority) {
+            return (PriorityFuture<T>) this.submit(task);
         }
-        return (PriorityFutureTask<T>) this.submit(callable);
+        return (PriorityFuture<T>) this.submit(new PriorityCallableAdapter<T>(new DefaultPriority(priority), task));
     }
 
     @Override
     protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
-        return new PriorityFutureTask<>(callable);
+        return new PriorityFutureAdapter<T>(callable);
     }
 
     @Override
     protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
-        return new PriorityFutureTask<>(runnable, value);
+        return new PriorityFutureAdapter<T>(runnable, value);
     }
 
     @Override
@@ -130,11 +121,11 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
             super.execute(command);
             return;
         }
-        int priority = 0;
         if (command instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
-            priority = ((Priority) command).priority();
+            super.execute(new PriorityRunnableAdapter((Priority) command, command));
+            return;
         }
-        super.execute(new RunnableAdapter(command, priority));
+        super.execute(new PriorityRunnableAdapter(new DefaultPriority(), command));
     }
 
     @Override
@@ -142,11 +133,10 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         if (task instanceof PriorityComparable) { // 防止重复包装
             return super.submit(task);
         }
-        int priority = 0;
         if (task instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
-            priority = ((Priority) task).priority();
+            return super.submit(new PriorityRunnableAdapter((Priority) task, task));
         }
-        return super.submit(new RunnableAdapter(task, priority));
+        return super.submit(new PriorityRunnableAdapter(new DefaultPriority(), task));
     }
 
     @Override
@@ -154,11 +144,10 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         if (task instanceof PriorityComparable) { // 防止重复包装
             return super.submit(task, result);
         }
-        int priority = 0;
-        if (task instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
-            priority = ((Priority) task).priority();
+        if (task instanceof Priority) {// 只实现了Priority接口则将Priority接口传递到适配器中
+            return super.submit(new PriorityRunnableAdapter((Priority) task, task), result);
         }
-        return super.submit(new RunnableAdapter(task, priority), result);
+        return super.submit(new PriorityRunnableAdapter(new DefaultPriority(), task), result);
     }
 
     @Override
@@ -166,166 +155,43 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         if (task instanceof PriorityComparable) { // 防止重复包装
             return super.submit(task);
         }
-        int priority = 0;
         if (task instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
-            priority = ((Priority) task).priority();
+            return super.submit(new PriorityCallableAdapter<T>((Priority) task, task));
         }
-        return super.submit(new CallableAdapter<T>(task, priority));
+        return super.submit(new PriorityCallableAdapter<T>(new DefaultPriority(), task));
     }
 
-    // Runnable 适配器
-    private static class RunnableAdapter extends PriorityRunnable {
+    // 默认实现
+    private final static class DefaultPriority implements Priority {
 
+        private int priority;
+
+        public DefaultPriority() {
+        }
+
+        public DefaultPriority(int priority) {
+            this.priority = priority;
+        }
+
+        @Override
+        public int priority() {
+            return priority;
+        }
+
+        @Override
+        public void priority(int priority) {
+            this.priority = priority;
+        }
+    }
+
+    private final static class PriorityRunnableAdapter implements PriorityRunnable, PriorityComparable<Object> {
+
+        private Priority priority;
         private Runnable runnable;
 
-        public RunnableAdapter(Runnable runnable, int priority) {
-            super(priority);
+        public PriorityRunnableAdapter(Priority priority, Runnable runnable) {
+            this.priority = priority;
             this.runnable = runnable;
-        }
-
-        @Override
-        public void run() {
-            if (runnable != null) {
-                runnable.run();
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "RunnableAdapter{" + "runnable=" + runnable + ", priority=" + priority() + '}';
-        }
-    }
-
-    // Callable 适配器
-    private static class CallableAdapter<V> extends PriorityCallable<V> {
-
-        private Callable<V> callable;
-
-        public CallableAdapter(Callable<V> callable, int priority) {
-            super(priority);
-            this.callable = callable;
-        }
-
-        @Override
-        public V call() throws Exception {
-            if (callable != null) {
-                return callable.call();
-            }
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            return "CallableAdapter{" + "callable=" + callable + ", priority=" + priority() + '}';
-        }
-    }
-
-    /**
-     * 具有优先级执行的Runnable
-     */
-    public static abstract class PriorityRunnable implements Runnable, PriorityComparable {
-
-        private int priority;
-
-        public PriorityRunnable(int priority) {
-            this.priority = priority;
-        }
-
-        @Override
-        public void priority(int priority) {
-            this.priority = priority;
-        }
-
-        @Override
-        public int priority() {
-            return priority;
-        }
-
-        @Override
-        public int compareTo(Priority o) {
-            int result = 0;
-            // 空，排在最前面
-            if (o == null) {
-                result = -1;
-            } else {
-                result = o.priority() - priority();// 优先级高的在前面
-            }
-            //log.debug("PriorityRunnable.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "PriorityRunnable{" + "priority=" + priority + '}';
-        }
-    }
-
-    /**
-     * 具有优先级执行的Callable
-     *
-     * @param <V>
-     */
-    public static abstract class PriorityCallable<V> implements Callable<V>, PriorityComparable {
-
-        private int priority;
-
-        public PriorityCallable(int priority) {
-            this.priority = priority;
-        }
-
-        @Override
-        public void priority(int priority) {
-            this.priority = priority;
-        }
-
-        @Override
-        public int priority() {
-            return priority;
-        }
-
-        @Override
-        public int compareTo(Priority o) {
-            int result = 0;
-            // 空，排在最前面
-            if (o == null) {
-                result = -1;
-            } else {
-                result = o.priority() - priority();// 优先级高的在前面
-            }
-            //log.debug("PriorityCallable.compareTo)-----this=" + this + ",that=" + o + ",result=" + result);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "PriorityCallable{" + "priority=" + priority + '}';
-        }
-    }
-
-    /**
-     * 具有优先级执行的FutureTask
-     *
-     * @param <V>
-     */
-    public class PriorityFutureTask<V> extends FutureTask<V> implements PriorityComparable {
-
-        private Object object;
-        private Priority priority;
-
-        public PriorityFutureTask(Callable<V> callable) {
-            super(callable);
-            object = callable;
-            if (callable instanceof Priority) {
-                priority = (Priority) callable;
-            }
-        }
-
-        public PriorityFutureTask(Runnable runnable, V result) {
-            super(runnable, result);
-            object = runnable;
-            if (runnable instanceof Priority) {
-                priority = (Priority) runnable;
-            }
         }
 
         @Override
@@ -344,28 +210,169 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         }
 
         @Override
-        public int compareTo(Priority o) {
+        public int compareTo(Object o) {
             int result = 0;
             // 空，排在最前面
             if (o == null) {
                 result = -1;
             } else {
-                result = o.priority() - priority();// 优先级高的在前面
+                if (o instanceof Priority) {
+                    result = ((Priority) o).priority() - priority();// 优先级高的在前面
+                }
             }
-            //log.debug("PriorityFutureTask.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
+            //log.debug("PriorityRunnableAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
+            return result;
+        }
+
+        @Override
+        public void run() {
+            if (runnable != null) {
+                runnable.run();
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "PriorityRunnableAdapter{" + "priority=" + priority() + ", runnable=" + runnable + '}';
+        }
+    }
+
+    private final static class PriorityCallableAdapter<V> implements PriorityCallable<V>, PriorityComparable<Object> {
+
+        private Priority priority;
+        private Callable<V> callable;
+
+        public PriorityCallableAdapter(Priority priority, Callable<V> callable) {
+            this.priority = priority;
+            this.callable = callable;
+        }
+
+        @Override
+        public void priority(int priority) {
+            if (this.priority != null) {
+                this.priority.priority(priority);
+            }
+        }
+
+        @Override
+        public int priority() {
+            if (this.priority != null) {
+                return this.priority.priority();
+            }
+            return 0;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            int result = 0;
+            // 空，排在最前面
+            if (o == null) {
+                result = -1;
+            } else {
+                if (o instanceof Priority) {
+                    result = ((Priority) o).priority() - priority();// 优先级高的在前面
+                }
+            }
+            //log.debug("PriorityCallableAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
+            return result;
+        }
+
+        @Override
+        public V call() throws Exception {
+            if (callable != null) {
+                return callable.call();
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return "PriorityCallableAdapter{" + "priority=" + priority.priority() + ", callable=" + callable + '}';
+        }
+    }
+
+    private final static class PriorityFutureAdapter<V> extends FutureTask<V> implements PriorityFuture<V>,
+            PriorityComparable<Object> {
+
+        private Priority priority;
+        private Object object;
+
+        public PriorityFutureAdapter(Callable<V> callable) {
+            super(callable);
+            if (callable instanceof Priority) {
+                priority = (Priority) callable;
+            }
+            object = callable;
+        }
+
+        public PriorityFutureAdapter(Runnable runnable, V result) {
+            super(runnable, result);
+            if (runnable instanceof Priority) {
+                priority = (Priority) runnable;
+            }
+            object = runnable;
+        }
+
+        @Override
+        public void priority(int priority) {
+            if (this.priority != null) {
+                this.priority.priority(priority);
+            }
+        }
+
+        @Override
+        public int priority() {
+            if (this.priority != null) {
+                return this.priority.priority();
+            }
+            return 0;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            int result = 0;
+            // 空，排在最前面
+            if (o == null) {
+                result = -1;
+            } else {
+                if (o instanceof Priority) {
+                    result = ((Priority) o).priority() - priority();// 优先级高的在前面
+                }
+            }
+            //log.debug("PriorityFutureAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
             return result;
         }
 
         @Override
         public String toString() {
-            return "PriorityFutureTask{" + "object=" + object + ", priority=" + priority() + '}';
+            return "PriorityFutureAdapter{" + "priority=" + priority() + ", object=" + object + '}';
         }
     }
 
     /**
-     * 具有Priority优先排序的Comparable接口
+     * 具有优先级排序的Comparable接口
      */
-    public interface PriorityComparable extends Priority, Comparable<Priority> {
+    private interface PriorityComparable<T> extends Priority, Comparable<T> {
+    }
+
+    /**
+     * 具有优先级排序的Callable
+     */
+    public interface PriorityCallable<V> extends Priority, Callable<V> {
+    }
+
+    /**
+     * 具有优先级排序的Runnable
+     */
+    public interface PriorityRunnable extends Priority, Runnable {
+    }
+
+    /**
+     * 具有优先级排序的Future
+     *
+     * @param <V>
+     */
+    public interface PriorityFuture<V> extends Priority, Runnable, Future<V> {
     }
 
     /**
