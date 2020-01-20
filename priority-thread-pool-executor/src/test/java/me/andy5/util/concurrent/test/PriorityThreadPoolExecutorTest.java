@@ -298,7 +298,6 @@ public class PriorityThreadPoolExecutorTest {
         executor.execute(r20);
         executor.submit(c13);
         executor.submit(c10);
-        executor.submit(r12);
         executor.submit(c17);
         executor.submit(r7);
 

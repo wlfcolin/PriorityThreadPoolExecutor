@@ -372,7 +372,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
      *
      * @param <V>
      */
-    public interface PriorityFuture<V> extends Priority, Runnable, Future<V> {
+    public interface PriorityFuture<V> extends Priority, Future<V> {
     }
 
     /**
