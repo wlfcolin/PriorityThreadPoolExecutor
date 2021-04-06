@@ -15,6 +15,7 @@ import me.andy5.util.concurrent.PriorityThreadPoolExecutor.PriorityRunnable;
 
 /**
  * PriorityThreadPoolExecutor测试
+ * PriorityThreadPoolExecutor test
  *
  * @author andy(Andy)
  * @datetime 2019-01-22 10:42 GMT+8
@@ -27,9 +28,8 @@ public class PriorityThreadPoolExecutorTest {
     @Test
     public void testPriorityRunnable() {
         long start = System.currentTimeMillis();
-        log.debug("--------testPriorityRunnable 开始执行--------");
+        log.debug("--------testPriorityRunnable begin--------");
 
-        // 不提供Comparator默认PriorityThreadPoolExecutor中实现的是优先级高的在前面
         final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>();
         final PriorityThreadPoolExecutor executor = new PriorityThreadPoolExecutor(2, 5, 60, TimeUnit.NANOSECONDS,
                 workQueue);
@@ -55,29 +55,52 @@ public class PriorityThreadPoolExecutorTest {
         final Runnable r14 = getTestRunnableImplPriority("r14", 14);
 
         executor.execute(r3);
+        log.debug("==== add r3 ====");
         executor.execute(r4);
+        log.debug("==== add r4 ====");
         executor.execute(runnable);
+        log.debug("==== add runnable ====");
         executor.execute(r1);
+        log.debug("==== add r1 ====");
         executor.submit(r2);
+        log.debug("==== add r2 ====");
         executor.execute(r5);
+        log.debug("==== add r5 ====");
         r11 = executor.execute(_r11, 11);
+        log.debug("==== add r11 ====");
         r12 = executor.submit(_r12, 12);
+        log.debug("==== add r12 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r1.priority(111);
         log.debug("-------- r1.priority(111) --------");
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r2.priority(222);
         log.debug("-------- r2.priority(222) --------");
 
         executor.submit(r8);
+        log.debug("==== add r8 ====");
         executor.execute(r13);
+        log.debug("==== add r13 ====");
         executor.submit(r14);
+        log.debug("==== add r14 ====");
         executor.execute(r10);
+        log.debug("==== add r10 ====");
         executor.execute(r6);
+        log.debug("==== add r6 ====");
         executor.submit(r7);
+        log.debug("==== add r7 ====");
         executor.execute(r9);
+        log.debug("==== add r9 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r11.priority(1111);
         log.debug("-------- r11.priority(1111) --------");
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r12.priority(1222);
         log.debug("-------- r12.priority(1222) --------");
 
@@ -94,16 +117,15 @@ public class PriorityThreadPoolExecutorTest {
         }
 
         long end = System.currentTimeMillis();
-        log.debug("--------testPriorityRunnable 结束执行，耗时=" + (end - start) + "--------");
+        log.debug("--------testPriorityRunnable end, time consuming=" + (end - start) + "--------");
     }
 
     @Test
     public void testPriorityCallable() {
         long start = System.currentTimeMillis();
-        log.debug("--------testPriorityCallable 开始执行--------");
+        log.debug("--------testPriorityCallable begin--------");
 
-        // 不提供Comparator默认PriorityThreadPoolExecutor中实现的是优先级高的在前面
-        final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>();
+        final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>(10);
         final PriorityThreadPoolExecutor executor = new PriorityThreadPoolExecutor(2, 5, 60, TimeUnit.NANOSECONDS,
                 workQueue);
 
@@ -125,25 +147,44 @@ public class PriorityThreadPoolExecutorTest {
         final Callable c12 = getTestCallableImplPriority("c12", 12);
 
         executor.submit(c3);
+        log.debug("==== add c3 ====");
         executor.submit(c4);
+        log.debug("==== add c4 ====");
         executor.submit(c8);
+        log.debug("==== add c8 ====");
         executor.submit(c2);
+        log.debug("==== add c2 ====");
         executor.submit(c1);
+        log.debug("==== add c1 ====");
         executor.submit(c5);
+        log.debug("==== add c5 ====");
         c11 = executor.submit(_c11, 11);
+        log.debug("==== add c11 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         c1.priority(111);
         log.debug("-------- c1.priority(111) --------");
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         c2.priority(222);
         log.debug("-------- c2.priority(222) --------");
 
         executor.submit(c12);
+        log.debug("==== add c12 ====");
         executor.submit(callable);
+        log.debug("==== add callable ====");
         executor.submit(c10);
+        log.debug("==== add c10 ====");
         executor.submit(c6);
+        log.debug("==== add c6 ====");
         executor.submit(c7);
+        log.debug("==== add c7 ====");
         executor.submit(c9);
+        log.debug("==== add c9 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         c11.priority(1111);
         log.debug("-------- c11.priority(1111) --------");
 
@@ -160,29 +201,30 @@ public class PriorityThreadPoolExecutorTest {
         }
 
         long end = System.currentTimeMillis();
-        log.debug("--------testPriorityCallable 结束执行，耗时=" + (end - start) + "--------");
+        log.debug("--------testPriorityCallable end, time consuming=" + (end - start) + "--------");
     }
 
     @Test
     public void testPriorityThreadPoolExecutor() {
         long start = System.currentTimeMillis();
-        log.debug("--------testPriorityThreadPoolExecutor 开始执行--------");
+        log.debug("--------testPriorityThreadPoolExecutor begin--------");
 
         // 自定义排序适配器
+        // Custom sort adapter
         final Comparator<Runnable> comparator = new Comparator<Runnable>() {
             @Override
             public int compare(Runnable o1, Runnable o2) {
                 if (o1 instanceof Priority && o2 instanceof Priority) {
-                    return ((Priority) o1).priority() - ((Priority) o2).priority();// 自定义实现，希望优先级【低】的在前面
+                    // 自定义优先级实现，希望优先级【低】的在前面
+                    // Custom priority implementation, hope the priority [low] is in front
+                    return ((Priority) o1).priority() - ((Priority) o2).priority();
                 }
                 return 0;
             }
         };
 
-        // 不提供Comparator默认PriorityThreadPoolExecutor中实现的是优先级高的在前面
-        final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>();
-        // 提供自定义Comparator
-        // final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>(10, comparator);
+        // final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>(10);
+        final PriorityBlockingQueue<Runnable> workQueue = new PriorityBlockingQueue<>(10, comparator);
         final PriorityThreadPoolExecutor executor = new PriorityThreadPoolExecutor(2, 5, 60, TimeUnit.NANOSECONDS,
                 workQueue);
 
@@ -233,38 +275,62 @@ public class PriorityThreadPoolExecutorTest {
         final PriorityCallable c19 = getPriorityCallable("c19", 19);
 
         executor.execute(r3);
+        log.debug("==== add r3 ====");
         executor.submit(c9);
+        log.debug("==== add c9 ====");
         executor.execute(r18);
+        log.debug("==== add r18 ====");
         executor.execute(r4);
+        log.debug("==== add r4 ====");
         executor.submit(c6);
+        log.debug("==== add c6 ====");
         executor.submit(c7);
+        log.debug("==== add c7 ====");
         executor.submit(r2);
+        log.debug("==== add r2 ====");
         executor.execute(r1);
+        log.debug("==== add r1 ====");
         executor.submit(c3);
+        log.debug("==== add c3 ====");
 
-        r11 = executor.execute(_r11, 11);// 如果不是为了改变优先级，返回值可以不接收
+        r11 = executor.execute(_r11, 11);
+        log.debug("==== add r11 ====");
         r12 = executor.submit(_r12, 12);
+        log.debug("==== add r12 ====");
 
         executor.execute(r14);
+        log.debug("==== add r14 ====");
         executor.submit(c15);
+        log.debug("==== add c15 ====");
         executor.submit(callable);
+        log.debug("==== add callable ====");
         executor.submit(c4);
+        log.debug("==== add c4 ====");
         executor.submit(r13);
+        log.debug("==== add r13 ====");
         c11 = executor.submit(_c11, 11);
+        log.debug("==== add c11 ====");
         executor.execute(r16);
+        log.debug("==== add r16 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r1.priority(111);
         log.debug("-------- r1.priority(111) --------");
 
         final PriorityRunnable r11f = r11;
         new Thread() {
             @Override
-            public void run() {// 在新线程中操作优先级
+            public void run() {
+                // 在新线程中操作优先级
+                // Operation priority in a new thread
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+                // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
                 r2.priority(222);
                 log.debug("-------- r2.priority(222) --------");
                 try {
@@ -272,40 +338,66 @@ public class PriorityThreadPoolExecutorTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+                // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
                 r11f.priority(1111);
                 log.debug("-------- r11.priority(1111) --------");
             }
         }.start();
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r12.priority(1222);
         log.debug("-------- r12.priority(1222) --------");
 
         executor.submit(c2);
+        log.debug("==== add c2 ====");
         executor.execute(r5);
+        log.debug("==== add r5 ====");
         executor.execute(runnable);
+        log.debug("==== add runnable ====");
         executor.submit(r8);
+        log.debug("==== add r8 ====");
         executor.submit(c12);
+        log.debug("==== add c12 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         c11.priority(1111);
         log.debug("-------- c11.priority(1111) --------");
 
         executor.submit(c17);
+        log.debug("==== add c17 ====");
         executor.execute(r10);
+        log.debug("==== add r10 ====");
         executor.submit(c19);
+        log.debug("==== add c19 ====");
         executor.submit(c1);
+        log.debug("==== add c1 ====");
         executor.submit(c5);
+        log.debug("==== add c5 ====");
         executor.submit(c8);
+        log.debug("==== add c8 ====");
         executor.execute(r20);
+        log.debug("==== add r20 ====");
         executor.submit(c13);
+        log.debug("==== add c13 ====");
         executor.submit(c10);
+        log.debug("==== add c10 ====");
         executor.submit(c17);
+        log.debug("==== add c17 ====");
         executor.submit(r7);
+        log.debug("==== add r7 ====");
 
+        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
+        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         c5.priority(555);
         log.debug("-------- c5.priority(555) --------");
 
         executor.execute(r9);
+        log.debug("==== add r9 ====");
         executor.execute(r6);
+        log.debug("==== add r6 ====");
 
         executor.shutdown();
         while (true) {
@@ -320,7 +412,7 @@ public class PriorityThreadPoolExecutorTest {
         }
 
         long end = System.currentTimeMillis();
-        log.debug("--------testPriorityThreadPoolExecutor 结束执行，耗时=" + (end - start) + "--------");
+        log.debug("--------testPriorityThreadPoolExecutor end, time consuming=" + (end - start) + "--------");
     }
 
     private static class TestRunnableImplPriority implements Runnable, Priority {
@@ -346,11 +438,13 @@ public class PriorityThreadPoolExecutorTest {
         @Override
         public void run() {
             try {
-                Thread.sleep(1456);// 模拟实现
+                // 模拟处理任务
+                // Simulate processing tasks
+                Thread.sleep(1456);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.debug("name=" + name + ",优先级=" + priority());
+            log.debug("execute " + name + ", priority=" + priority());
         }
 
         @Override
@@ -382,11 +476,13 @@ public class PriorityThreadPoolExecutorTest {
         @Override
         public String call() throws Exception {
             try {
-                Thread.sleep(1738);// 模拟实现
+                // 模拟处理任务
+                // Simulate processing tasks
+                Thread.sleep(1738);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.debug("name=" + name + ",优先级=" + priority());
+            log.debug("execute " + name + ", priority=" + priority());
             return name;
         }
 
@@ -397,13 +493,11 @@ public class PriorityThreadPoolExecutorTest {
     }
 
     private final static Runnable getTestRunnableImplPriority(final String name, final int priority) {
-        return new TestRunnableImplPriority(name, priority) {
-        };
+        return new TestRunnableImplPriority(name, priority);
     }
 
     private final static Callable getTestCallableImplPriority(final String name, final int priority) {
-        return new TestCallableImplPriority(name, priority) {
-        };
+        return new TestCallableImplPriority(name, priority);
     }
 
     private final static Runnable getRunnable(final String name) {
@@ -411,15 +505,17 @@ public class PriorityThreadPoolExecutorTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1739);// 模拟实现
+                    // 模拟处理任务
+                    // Simulate processing tasks
+                    Thread.sleep(1739);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Integer priority = priority(this);
+                Integer priority = getPriority(this);
                 if (priority != null) {
-                    log.debug("name=" + name + ",优先级=" + priority);
+                    log.debug("execute " + name + ", priority=" + priority);
                 } else {
-                    log.debug("name=" + name);
+                    log.debug("execute " + name);
                 }
             }
 
@@ -435,15 +531,17 @@ public class PriorityThreadPoolExecutorTest {
             @Override
             public String call() throws Exception {
                 try {
-                    Thread.sleep(1924);// 模拟实现
+                    // 模拟处理任务
+                    // Simulate processing tasks
+                    Thread.sleep(1924);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Integer priority = priority(this);
+                Integer priority = getPriority(this);
                 if (priority != null) {
-                    log.debug("name=" + name + ",优先级=" + priority);
+                    log.debug("execute " + name + ", priority=" + priority);
                 } else {
-                    log.debug("name=" + name);
+                    log.debug("execute " + name);
                 }
                 return name;
             }
@@ -455,13 +553,6 @@ public class PriorityThreadPoolExecutorTest {
         };
     }
 
-    private final static Integer priority(Object o) {
-        if (o instanceof Priority) {
-            return ((Priority) o).priority();
-        }
-        return null;
-    }
-
     private final static PriorityRunnable getPriorityRunnable(final String name, final int priority) {
         return new PriorityRunnable() {
 
@@ -470,11 +561,13 @@ public class PriorityThreadPoolExecutorTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1693);// 模拟实现
+                    // 模拟处理任务
+                    // Simulate processing tasks
+                    Thread.sleep(1693);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                log.debug("name=" + name + ",优先级=" + priority());
+                log.debug("execute " + name + ", priority=" + priority());
             }
 
             @Override
@@ -502,11 +595,13 @@ public class PriorityThreadPoolExecutorTest {
             @Override
             public String call() throws Exception {
                 try {
-                    Thread.sleep(1874);// 模拟实现
+                    // 模拟处理任务
+                    // Simulate processing tasks
+                    Thread.sleep(1874);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                log.debug("name=" + name + ",优先级=" + priority());
+                log.debug("execute " + name + ", priority=" + priority());
                 return name;
             }
 
@@ -525,5 +620,12 @@ public class PriorityThreadPoolExecutorTest {
                 return "PriorityThreadPoolExecutorTest.PriorityCallable{" + "name=" + name + ",priority=" + priority() + '}';
             }
         };
+    }
+
+    private final static Integer getPriority(Object o) {
+        if (o instanceof Priority) {
+            return ((Priority) o).priority();
+        }
+        return null;
     }
 }

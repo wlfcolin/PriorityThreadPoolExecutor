@@ -11,7 +11,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 具有优先级执行的线程池
+ * 一个具有指定和动态调整任务优先级能力的Java线程池
+ * A java thread pool with the ability to specify and dynamically adjust task priorities
  *
  * @author andy(Andy)
  * @datetime 2019-09-19 09:01 GMT+8
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
-    //private static Log log = Log.getLog(PriorityThreadPoolExecutor.class);
+    // private static Log log = Log.getLog(PriorityThreadPoolExecutor.class);
 
     public PriorityThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
                                       PriorityBlockingQueue<Runnable> workQueue) {
@@ -44,6 +45,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * 指定优先级执行Runnable
+     * Specify priority to execute Runnable
      *
      * @param command
      * @param priority
@@ -61,6 +63,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * 指定优先级执行Runnable
+     * Specify priority to execute Runnable
      *
      * @param task
      * @param priority
@@ -75,6 +78,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * 指定优先级执行Runnable
+     * Specify priority to execute Runnable
      *
      * @param task
      * @param result
@@ -92,6 +96,7 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * 指定优先级执行Callable
+     * Specify priority to execute Callable
      *
      * @param task
      * @param priority
@@ -117,11 +122,15 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public void execute(Runnable command) {
-        if (command instanceof PriorityComparable) { // 防止重复包装
+        // 防止重复包装
+        // Avoid duplicate packaging
+        if (command instanceof PriorityComparable) {
             super.execute(command);
             return;
         }
-        if (command instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
+        // 使用适配器将实现了Priority接口的Runnable进行适配
+        // Use the adapter to adapt Runnable that implements the Priority interface
+        if (command instanceof Priority) {
             super.execute(new PriorityRunnableAdapter((Priority) command, command));
             return;
         }
@@ -130,10 +139,14 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public Future<?> submit(Runnable task) {
-        if (task instanceof PriorityComparable) { // 防止重复包装
+        // 防止重复包装
+        // Avoid duplicate packaging
+        if (task instanceof PriorityComparable) {
             return super.submit(task);
         }
-        if (task instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
+        // 使用适配器将实现了Priority接口的Runnable进行适配
+        // Use the adapter to adapt Runnable that implements the Priority interface
+        if (task instanceof Priority) {
             return super.submit(new PriorityRunnableAdapter((Priority) task, task));
         }
         return super.submit(new PriorityRunnableAdapter(new DefaultPriority(), task));
@@ -141,10 +154,14 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        if (task instanceof PriorityComparable) { // 防止重复包装
+        // 防止重复包装
+        // Avoid duplicate packaging
+        if (task instanceof PriorityComparable) {
             return super.submit(task, result);
         }
-        if (task instanceof Priority) {// 只实现了Priority接口则将Priority接口传递到适配器中
+        // 使用适配器将实现了Priority接口的Runnable进行适配
+        // Use the adapter to adapt Runnable that implements the Priority interface
+        if (task instanceof Priority) {
             return super.submit(new PriorityRunnableAdapter((Priority) task, task), result);
         }
         return super.submit(new PriorityRunnableAdapter(new DefaultPriority(), task), result);
@@ -152,16 +169,21 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        if (task instanceof PriorityComparable) { // 防止重复包装
+        // 防止重复包装
+        // Avoid duplicate packaging
+        if (task instanceof PriorityComparable) {
             return super.submit(task);
         }
-        if (task instanceof Priority) {// 只实现了Priority接口则将priority值传递到适配器中
+        // 使用适配器将实现了Priority接口的Runnable进行适配
+        // Use the adapter to adapt Runnable that implements the Priority interface
+        if (task instanceof Priority) {
             return super.submit(new PriorityCallableAdapter<T>((Priority) task, task));
         }
         return super.submit(new PriorityCallableAdapter<T>(new DefaultPriority(), task));
     }
 
-    // 默认实现
+    // Priority的默认实现
+    // default implements of Priority
     private final static class DefaultPriority implements Priority {
 
         private int priority;
@@ -184,6 +206,8 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         }
     }
 
+    // Priority与Runnable的适配器
+    // Priority and Runnable adapter
     private final static class PriorityRunnableAdapter implements PriorityRunnable, PriorityComparable<Object> {
 
         private Priority priority;
@@ -213,14 +237,17 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         public int compareTo(Object o) {
             int result = 0;
             // 空，排在最前面
+            // Empty, at the top
             if (o == null) {
                 result = -1;
             } else {
                 if (o instanceof Priority) {
-                    result = ((Priority) o).priority() - priority();// 优先级高的在前面
+                    // 优先级高的在前面
+                    // The higher priority is first
+                    result = ((Priority) o).priority() - priority();
                 }
             }
-            //log.debug("PriorityRunnableAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
+            // log.debug("PriorityRunnableAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
             return result;
         }
 
@@ -237,6 +264,8 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         }
     }
 
+    // Priority与Callable的适配器
+    // Priority and Callable adapter
     private final static class PriorityCallableAdapter<V> implements PriorityCallable<V>, PriorityComparable<Object> {
 
         private Priority priority;
@@ -266,14 +295,17 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         public int compareTo(Object o) {
             int result = 0;
             // 空，排在最前面
+            // Empty, at the top
             if (o == null) {
                 result = -1;
             } else {
                 if (o instanceof Priority) {
-                    result = ((Priority) o).priority() - priority();// 优先级高的在前面
+                    // 优先级高的在前面
+                    // The higher priority is first
+                    result = ((Priority) o).priority() - priority();
                 }
             }
-            //log.debug("PriorityCallableAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
+            // log.debug("PriorityCallableAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
             return result;
         }
 
@@ -291,6 +323,8 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         }
     }
 
+    // Priority与Future的适配器
+    // Priority and Future adapter
     private final static class PriorityFutureAdapter<V> extends FutureTask<V> implements PriorityFuture<V>,
             PriorityComparable<Object> {
 
@@ -332,14 +366,17 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         public int compareTo(Object o) {
             int result = 0;
             // 空，排在最前面
+            // Empty, at the top
             if (o == null) {
                 result = -1;
             } else {
                 if (o instanceof Priority) {
-                    result = ((Priority) o).priority() - priority();// 优先级高的在前面
+                    // 优先级高的在前面
+                    // The higher priority is first
+                    result = ((Priority) o).priority() - priority();
                 }
             }
-            //log.debug("PriorityFutureAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
+            // log.debug("PriorityFutureAdapter.compareTo()-----this=" + this + ",that=" + o + ",result=" + result);
             return result;
         }
 
@@ -351,24 +388,32 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * 具有优先级排序的Comparable接口
+     * Comparable interface with priority ordering
+     *
+     * @param <T>
      */
     private interface PriorityComparable<T> extends Priority, Comparable<T> {
     }
 
     /**
-     * 具有优先级排序的Callable
+     * 具有优先级排序的Callable接口
+     * Callable interface with priority ordering
+     *
+     * @param <V>
      */
     public interface PriorityCallable<V> extends Priority, Callable<V> {
     }
 
     /**
-     * 具有优先级排序的Runnable
+     * 具有优先级排序的Runnable接口
+     * Runnable interface with priority ordering
      */
     public interface PriorityRunnable extends Priority, Runnable {
     }
 
     /**
-     * 具有优先级排序的Future
+     * 具有优先级排序的Future接口
+     * Future interface with priority ordering
      *
      * @param <V>
      */
@@ -377,11 +422,14 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
      * 优先级排序接口
+     * Priority interface
+     *
      */
     public interface Priority {
 
         /**
          * 优先级，越大越靠前
+         * Priority, the bigger the higher
          *
          * @return
          */
@@ -389,8 +437,9 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
         /**
          * 改变优先级，越大越靠前
+         * Change the priority, the bigger the higher
          *
-         * @return
+         * @param priority
          */
         void priority(int priority);
     }

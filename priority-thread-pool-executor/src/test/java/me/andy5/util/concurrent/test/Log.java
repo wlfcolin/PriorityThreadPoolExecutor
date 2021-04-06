@@ -2,6 +2,7 @@ package me.andy5.util.concurrent.test;
 
 /**
  * 日志处理类
+ * Log handling class
  *
  * @author andy(Andy)
  * @datetime 2018-08-27 16:46 GMT+8
@@ -11,6 +12,7 @@ public class Log {
 
     /**
      * 获取写日志类
+     * Get the write log class
      *
      * @param clazz
      * @return
@@ -30,6 +32,7 @@ public class Log {
 
     /**
      * 调试信息
+     * The debug log
      *
      * @param msg
      */
