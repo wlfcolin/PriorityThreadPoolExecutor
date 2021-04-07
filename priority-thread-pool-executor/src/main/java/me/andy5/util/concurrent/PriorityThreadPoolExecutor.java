@@ -120,6 +120,15 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         return new PriorityFutureAdapter<T>(runnable, value);
     }
 
+    /**
+     * 传递子类PriorityRunnable，传递Runnable而非PriorityRunnable的话，将不支持优先级调整
+     * 如果要使用Runnable又需要支持优先级可用扩展方法{{@link #execute(Runnable, int)}}并使用其返回值进行优先级调整
+     *
+     * Use the subclass PriorityRunnable instead of Runnable, use Runnable instead of PriorityRunnable will not support priority adjustment
+     * if it is need to use Runnable support priority you can use the extension methods {{@link #execute(Runnable, int)}} and use its return value to adjust the priority
+     *
+     * @param command
+     */
     @Override
     public void execute(Runnable command) {
         // 防止重复包装
@@ -137,6 +146,16 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         super.execute(new PriorityRunnableAdapter(new DefaultPriority(), command));
     }
 
+    /**
+     * 传递子类PriorityRunnable，传递Runnable而非PriorityRunnable的话，将不支持优先级调整
+     * 如果要使用Runnable又需要支持优先级可用扩展方法{{@link #submit(Runnable, int)}}并使用其返回值进行优先级调整
+     *
+     * Use the subclass PriorityRunnable instead of Runnable, use Runnable instead of PriorityRunnable will not support priority adjustment
+     * if it is need to use Runnable support priority you can use the extension methods {{@link #submit(Runnable, int)}} and use its return value to adjust the priority
+     *
+     * @param task
+     * @return
+     */
     @Override
     public Future<?> submit(Runnable task) {
         // 防止重复包装
@@ -152,6 +171,18 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         return super.submit(new PriorityRunnableAdapter(new DefaultPriority(), task));
     }
 
+    /**
+     * 传递子类PriorityRunnable，传递Runnable而非PriorityRunnable的话，将不支持优先级调整
+     * 如果要使用Runnable又需要支持优先级可用扩展方法{{@link #submit(Runnable, Object, int)}}并使用其返回值进行优先级调整
+     *
+     * Use the subclass PriorityRunnable instead of Runnable, use Runnable instead of PriorityRunnable will not support priority adjustment
+     * if it is need to use Runnable support priority you can use the extension methods {{@link #submit(Runnable, Object, int)}} and use its return value to adjust the priority
+     *
+     * @param task
+     * @param result
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
         // 防止重复包装
@@ -167,6 +198,17 @@ public class PriorityThreadPoolExecutor extends ThreadPoolExecutor {
         return super.submit(new PriorityRunnableAdapter(new DefaultPriority(), task), result);
     }
 
+    /**
+     * 传递子类PriorityCallable，传递Callable而非PriorityCallable的话，将不支持优先级调整
+     * 如果要使用Callable又需要支持优先级可用扩展方法{{@link #submit(Callable, int)}}并使用其返回值进行优先级调整
+     *
+     * Use the subclass PriorityCallable instead of Callable, use Callable instead of PriorityCallable will not support priority adjustment
+     * if it is need to use Callable support priority you can use the extension methods {{@link #submit(Callable, int)}} and use its return value to adjust the priority
+     *
+     * @param task
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> Future<T> submit(Callable<T> task) {
         // 防止重复包装

@@ -71,12 +71,10 @@ public class PriorityThreadPoolExecutorTest {
         r12 = executor.submit(_r12, 12);
         log.debug("==== add r12 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         r1.priority(111);
         log.debug("-------- r1.priority(111) --------");
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r2.priority(222);
         log.debug("-------- r2.priority(222) --------");
 
@@ -95,12 +93,10 @@ public class PriorityThreadPoolExecutorTest {
         executor.execute(r9);
         log.debug("==== add r9 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         r11.priority(1111);
         log.debug("-------- r11.priority(1111) --------");
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         r12.priority(1222);
         log.debug("-------- r12.priority(1222) --------");
 
@@ -161,12 +157,10 @@ public class PriorityThreadPoolExecutorTest {
         c11 = executor.submit(_c11, 11);
         log.debug("==== add c11 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         c1.priority(111);
         log.debug("-------- c1.priority(111) --------");
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
         c2.priority(222);
         log.debug("-------- c2.priority(222) --------");
 
@@ -183,8 +177,8 @@ public class PriorityThreadPoolExecutorTest {
         executor.submit(c9);
         log.debug("==== add c9 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         c11.priority(1111);
         log.debug("-------- c11.priority(1111) --------");
 
@@ -313,8 +307,8 @@ public class PriorityThreadPoolExecutorTest {
         executor.execute(r16);
         log.debug("==== add r16 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         r1.priority(111);
         log.debug("-------- r1.priority(111) --------");
 
@@ -329,8 +323,8 @@ public class PriorityThreadPoolExecutorTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-                // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+                // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+                // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
                 r2.priority(222);
                 log.debug("-------- r2.priority(222) --------");
                 try {
@@ -338,15 +332,15 @@ public class PriorityThreadPoolExecutorTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-                // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+                // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+                // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
                 r11f.priority(1111);
                 log.debug("-------- r11.priority(1111) --------");
             }
         }.start();
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         r12.priority(1222);
         log.debug("-------- r12.priority(1222) --------");
 
@@ -361,8 +355,8 @@ public class PriorityThreadPoolExecutorTest {
         executor.submit(c12);
         log.debug("==== add c12 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         c11.priority(1111);
         log.debug("-------- c11.priority(1111) --------");
 
@@ -389,8 +383,8 @@ public class PriorityThreadPoolExecutorTest {
         executor.submit(r7);
         log.debug("==== add r7 ====");
 
-        // PriorityThreadPoolExecutor.corePoolSize会影响调节的响应速度
-        // PriorityThreadPoolExecutor.corePoolSize will affect the response speed of the adjustment
+        // 动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务
+        // Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize
         c5.priority(555);
         log.debug("-------- c5.priority(555) --------");
 

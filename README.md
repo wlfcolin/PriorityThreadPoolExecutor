@@ -9,13 +9,11 @@
 ``` java
 // ThreadPoolExecutor的方法
 
-// 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
+// 传递子类PriorityRunnable，如果要使用Runnable又需要支持优先级可用下面的扩展方法
 void execute(Runnable command)
-// 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
 Future<?> submit(Runnable task)
-// 传递子类PriorityRunnable，如果无法传递PriorityRunnable可用下面的扩展方法
 Future<T> submit(Runnable task, T result)
-// 传递子类PriorityCallable，如果无法传递PriorityCallable可用下面的扩展方法
+// 传递子类PriorityCallable，如果要使用Callable又需要支持优先级可用下面的扩展方法
 Future<T> submit(Callable<T> task)
 
 // PriorityThreadPoolExecutor新扩展的方法
@@ -25,7 +23,7 @@ PriorityFuture<T> submit(Runnable task, T result, int priority)
 PriorityFuture<T> submit(Callable<T> task, int priority)
 ```
 
-已经添加到线程池后动态调整优先级操作方法（动态调整优先级的有效数据会受到PriorityThreadPoolExecutor.corePoolSize的影响）：
+已经添加到线程池后动态调整优先级操作方法（动态调整不会影响PriorityThreadPoolExecutor.corePoolSize内正在执行的任务）：
 ``` java
 // PriorityRunnable调整优先级
 PriorityRunnable.priority(int priority)

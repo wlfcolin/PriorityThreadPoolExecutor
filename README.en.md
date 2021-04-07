@@ -7,11 +7,11 @@ The following methods of ThreadPoolExecutor and the newly extended methods of Pr
 ``` java
 // Methods of ThreadPoolExecutor
 
-// Pass the subclass PriorityRunnable, if you cannot pass PriorityRunnable, you can use the following extension methods
+// Use the subclass PriorityRunnable instead of Runnable, if it is need to use Runnable support priority you can use the following extension methods instead
 void execute(Runnable command)
 Future<?> submit(Runnable task)
 Future<T> submit(Runnable task, T result)
-// Pass the subclass PriorityCallable, if you cannot pass PriorityCallable, you can use the following extension methods
+// Use the subclass PriorityCallable instead of Callable, if it is need to use Callable support priority you can use the following extension methods instead
 Future<T> submit(Callable<T> task)
 
 // PriorityThreadPoolExecutor new extension method
@@ -21,7 +21,7 @@ PriorityFuture<T> submit(Runnable task, T result, int priority)
 PriorityFuture<T> submit(Callable<T> task, int priority)
 ```
 
-After it has been added to the thread pool, the operation method of dynamically adjusting the priority (the effective data of dynamically adjusting the priority will be affected by PriorityThreadPoolExecutor.corePoolSize):
+Use the operation method to dynamically adjusting the priority when it has been added to the thread pool (Dynamic adjustment will not affect the tasks being executed in PriorityThreadPoolExecutor.corePoolSize):
 ``` java
 // PriorityRunnable adjust priority
 PriorityRunnable.priority(int priority)
